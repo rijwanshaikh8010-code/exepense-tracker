@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Expense Tracker</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<h1>Expense Tracker </h1>
+
+<div class="filters">
+<form method="GET">
+Start: <input type="date" name="start">
+End: <input type="date" name="end">
+<select name="category">
+<option>All</option>
+<option>Food</option>
+<option>Transport</option>
+<option>Shopping</option>
+<option>Bills</option>
+</select>
+<button>Apply</button>
+</form>
+</div>
+
+<div class="container">
+
+<div class="box">
+<h2>Add Expense</h2>
+<form method="POST">
+<input name="description" placeholder="Description" required>
+<input name="amount" type="number" placeholder="Amount" required>
+<input name="date" type="date" required>
+<select name="category">
+<option>Food</option><option>Transport</option>
+<option>Shopping</option><option>Bills</option>
+</select>
+<button>Add</button>
+</form>
+</div>
+
+<div class="box">
+<h2>Total ₹{{total}}</h2>
+<table>
+<tr><th>Date</th><th>Desc</th><th>Cat</th><th>Amt</th><th></th></tr>
+{% for e in expenses %}
+<tr>
+<td>{{e[4]}}</td><td>{{e[1]}}</td><td>{{e[2]}}</td>
+<td>{{e[3]}}</td>
+<td><a href="/delete/{{e[0]}}">❌</a></td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+</div>
+
+<div class="charts">
+<canvas id="pie"></canvas>
+<canvas id="bar"></canvas>
+</div>
+
+<script>
+const cats = {{ cats | tojson }};
+const pieLabels = cats.map(x => x[0]);
+const pieData = cats.map(x => x[1]);
+
+new Chart(document.getElementById("pie"), {
+  type: "pie",
+  data: {
+    labels: pieLabels,
+    datasets: [{
+      data: pieData,
+      backgroundColor: ["#38bdf8","#f87171","#4ade80","#facc15"]
+    }]
+  }
+});
+
+const dates = {{ dates | tojson }};
+const barLabels = dates.map(x => x[0]);
+const barData = dates.map(x => x[1]);
+
+new Chart(document.getElementById("bar"), {
+  type: "bar",
+  data: {
+    labels: barLabels,
+    datasets: [{
+      label: "Total",
+      data: barData,
+      backgroundColor: "#38bdf8"
+    }]
+  }
+});
+</script>
+
+</body>
+</html>
